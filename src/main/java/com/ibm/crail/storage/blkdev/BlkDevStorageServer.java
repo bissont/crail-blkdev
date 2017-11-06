@@ -53,7 +53,7 @@ public class BlkDevStorageServer implements StorageServer {
 
 	}
 	public void init(CrailConfiguration crailConfiguration, String[] args) throws Exception {
-		if (initialized)	 {
+		if (initialized) {
 			throw new IOException("BlkDevStorageTier already initialized");
 		}
 		initialized = true;
@@ -71,8 +71,6 @@ public class BlkDevStorageServer implements StorageServer {
 		}
 		isAlive = true;
 		alignedSize = BlkDevStorageConstants.STORAGE_LIMIT - (BlkDevStorageConstants.STORAGE_LIMIT % BlkDevStorageConstants.ALLOCATION_SIZE);
-		alignedSize = BlkDevStorageConstants.STORAGE_LIMIT;
-		this.addr = 0;
 		endPoint = new BlkDevStorageEndpoint();
 	}
 
@@ -84,10 +82,9 @@ public class BlkDevStorageServer implements StorageServer {
 	@Override
 	public StorageResource allocateResource() throws Exception {
 		StorageResource resource = null;
-
+		addr = 0;
 		if (alignedSize > 0) {
 			LOG.info("new block, length " + BlkDevStorageConstants.ALLOCATION_SIZE);
-			LOG.debug("block stag 0, addr 0, length " + BlkDevStorageConstants.ALLOCATION_SIZE);
 			alignedSize -= BlkDevStorageConstants.ALLOCATION_SIZE;
 			resource = StorageResource.createResource(addr, (int) BlkDevStorageConstants.ALLOCATION_SIZE, 0);
 			addr += BlkDevStorageConstants.ALLOCATION_SIZE;
@@ -96,7 +93,7 @@ public class BlkDevStorageServer implements StorageServer {
 	}
 
 	public void run() {
-		LOG.info("BlkDataNodeSErver started");
+		LOG.info("BlkDevStorageTier started");
 	}
 
 	public boolean isAlive() {
