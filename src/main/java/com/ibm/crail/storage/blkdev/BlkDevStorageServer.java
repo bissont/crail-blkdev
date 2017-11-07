@@ -72,6 +72,7 @@ public class BlkDevStorageServer implements StorageServer {
 		isAlive = true;
 		alignedSize = BlkDevStorageConstants.STORAGE_LIMIT - (BlkDevStorageConstants.STORAGE_LIMIT % BlkDevStorageConstants.ALLOCATION_SIZE);
 		endPoint = new BlkDevStorageEndpoint();
+		addr = 0;
 	}
 
 	@Override
@@ -82,7 +83,6 @@ public class BlkDevStorageServer implements StorageServer {
 	@Override
 	public StorageResource allocateResource() throws Exception {
 		StorageResource resource = null;
-		addr = 0;
 		if (alignedSize > 0) {
 			LOG.info("new block, length " + BlkDevStorageConstants.ALLOCATION_SIZE);
 			alignedSize -= BlkDevStorageConstants.ALLOCATION_SIZE;
