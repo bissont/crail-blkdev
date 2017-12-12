@@ -34,9 +34,12 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class BlkDevStorageServer implements StorageServer {
 	private static final Logger LOG = CrailUtils.getLogger();
@@ -47,7 +50,6 @@ public class BlkDevStorageServer implements StorageServer {
 	private boolean initialized = false;
 	private long addr;
 	private long alignedSize;
-	private BlkDevStorageEndpoint endPoint;
 
 	public BlkDevStorageServer() throws Exception {
 
@@ -57,27 +59,41 @@ public class BlkDevStorageServer implements StorageServer {
 			throw new IOException("BlkDevStorageTier already initialized");
 		}
 		initialized = true;
-		BlkDevStorageConstants.init(crailConfiguration, args);
-		LOG.info("initalizing block device datanode");
-		// We do not support multiple block devices yet
-		InetAddress address = InetAddress.getLoopbackAddress();
-		int port = 12345;
 
-		storageAddr = new InetSocketAddress(address, port);
-		String directory = BlkDevStorageConstants.DATA_PATH;
-		path = FileSystems.getDefault().getPath(directory);
-		if (!Files.exists(path)) {
-			throw new IllegalArgumentException("BlkDev path does not exists!");
-		}
+		BlkDevStorageConstants.init(crailConfiguration, args);
+
+		storageAddr = getDataNodeAddress();
 		isAlive = true;
-		alignedSize = BlkDevStorageConstants.STORAGE_LIMIT - (BlkDevStorageConstants.STORAGE_LIMIT % BlkDevStorageConstants.ALLOCATION_SIZE);
-		endPoint = new BlkDevStorageEndpoint();
+		alignedSize = BlkDevStorageConstants.STORAGE_SIZE -
+				(BlkDevStorageConstants.STORAGE_SIZE % BlkDevStorageConstants.ALLOCATION_SIZE);
 		addr = 0;
+	}
+
+	public static InetSocketAddress getDataNodeAddress() throws IOException {
+		String ifname = BlkDevStorageConstants.STORAGE_BLKDEV_INTERFACE;
+		int port = BlkDevStorageConstants.STORAGE_BLKDEV_PORT;
+		
+		NetworkInterface netif = NetworkInterface.getByName(ifname);
+		if (netif == null){
+			return null;
+		}
+
+		List<InterfaceAddress> addresses = netif.getInterfaceAddresses();
+		InetAddress addr = null;
+		for (InterfaceAddress address: addresses){
+			if (address.getBroadcast() != null){
+				InetAddress _addr = address.getAddress();
+				addr = _addr;
+			}
+		}		
+
+		InetSocketAddress inetAddr = new InetSocketAddress(addr, port);
+		return inetAddr;
 	}
 
 	@Override
 	public void printConf(Logger log) {
-		BlkDevStorageConstants.printConf(log);
+		BlkDevStorageConstants.printTargetConf(log);
 	}
 
 	@Override
