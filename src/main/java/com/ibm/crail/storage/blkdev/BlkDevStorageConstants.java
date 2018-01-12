@@ -120,11 +120,11 @@ public class BlkDevStorageConstants {
 		}
 
 		/*
-         * Read the comma seperated lists of virtual device paths and their corresponding datanodes
-         * (IP/ports) from the configuration file, creating a map from the key (IP/port) to virtual
-         * device path. This is map is then consulted to identify the virtual device to when an Endpoint
-         * is created.
-         */
+		 * Read the comma seperated lists of virtual device paths and their corresponding datanodes
+		 * (IP/ports) from the configuration file, creating a map from the key (IP/port) to virtual
+		 * device path. This is map is then consulted to identify the virtual device to when an Endpoint
+		 * is created.
+		 */
 		StringTokenizer tokenizer = new StringTokenizer(BlkDevStorageConstants.DATA_PATH, ",");
 		if (!tokenizer.hasMoreTokens()){
 			throw new IOException("No data paths defined!");
