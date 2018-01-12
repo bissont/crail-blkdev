@@ -23,27 +23,28 @@ The target parameters are as follows (shown with default values):
 ```
 crail.storage.blkdev.storagesize	1073741824
 crail.storage.blkdev.allocationsize	1048576
-crail.storage.blkdev.interface		eth5
+crail.storage.blkdev.ip         12.12.12.63
 crail.storage.blkdev.port		12345
 ```
 
 The client parameters are as follows (shown with default values):
 ```
-crail.storage.blkdev.datapath		/dev/vdev1,/dev/vdev2
-crail.storage.blkdev.dataipport		12.12.12.62:54321,12.12.12.63:12345
+crail.storage.blkdev.path		/dev/vdev1,/dev/vdev2
+crail.storage.blkdev.ipport		12.12.12.62:54321,12.12.12.63:12345
 crail.storage.blkdev.storagelimit	2147483648
 crail.storage.blkdev.queuedepth 	8
 ```
 
-The columns in in the datapath and dataipport parameters reflect the mapping
-that client has already setup between a target block device and local virtual
-block device. For example, in the configuration above, on the target a block
-device is exposed on interface eth5 (12.12.12.63) and port 12345. The client
-has mapped this remove block device to path /dev/vdev2, with a protocol such
-as iSCSI. The first column of dataipport and datapath reflect a different
-block device target.
+The columns in in the path and ipport parameters reflect the mapping (iSCSI) that
+client has already setup between a target block device and local virtual block
+device; this is why there is no device specified on the target side. For
+example, in the configuration above, on the target, a block device
+is exposed at ip address 12.12.12.63 and port 12345. The client has already
+mapped this remote block device to path /dev/vdev2, with a protocol such as
+iSCSI.
 
-Additionally, the storagelimit should be a sum of the capacaity of all the
+Each column in ipport and path reflect at different block device
+target. Additionally, the storagelimit should be a sum of the capacity of all the
 block-device storage targets.
 
 You can put these values in `$CRAIL_HOME/conf/crail-site.conf`.
@@ -101,3 +102,4 @@ If you have questions or suggestions, feel free to post at:
 https://groups.google.com/forum/#!forum/zrlio-users
 
 or email: zrlio-users@googlegroups.com
+block device target.

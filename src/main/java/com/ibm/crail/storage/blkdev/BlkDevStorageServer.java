@@ -32,14 +32,8 @@ import com.ibm.crail.utils.CrailUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public class BlkDevStorageServer implements StorageServer {
 	private static final Logger LOG = CrailUtils.getLogger();
@@ -62,33 +56,15 @@ public class BlkDevStorageServer implements StorageServer {
 
 		BlkDevStorageConstants.init(crailConfiguration, args);
 
-		storageAddr = getDataNodeAddress();
+		String ipAddr = BlkDevStorageConstants.STORAGE_BLKDEV_IP;
+		int port = BlkDevStorageConstants.STORAGE_BLKDEV_PORT;
+		storageAddr = new InetSocketAddress(ipAddr, port);
+
 		isAlive = true;
 		alignedSize = BlkDevStorageConstants.STORAGE_SIZE -
 				(BlkDevStorageConstants.STORAGE_SIZE % BlkDevStorageConstants.ALLOCATION_SIZE);
 		addr = 0;
-	}
 
-	public static InetSocketAddress getDataNodeAddress() throws IOException {
-		String ifname = BlkDevStorageConstants.STORAGE_BLKDEV_INTERFACE;
-		int port = BlkDevStorageConstants.STORAGE_BLKDEV_PORT;
-		
-		NetworkInterface netif = NetworkInterface.getByName(ifname);
-		if (netif == null){
-			return null;
-		}
-
-		List<InterfaceAddress> addresses = netif.getInterfaceAddresses();
-		InetAddress addr = null;
-		for (InterfaceAddress address: addresses){
-			if (address.getBroadcast() != null){
-				InetAddress _addr = address.getAddress();
-				addr = _addr;
-			}
-		}		
-
-		InetSocketAddress inetAddr = new InetSocketAddress(addr, port);
-		return inetAddr;
 	}
 
 	@Override
